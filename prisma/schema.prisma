@@ -9,3 +9,105 @@ datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
+
+model User {
+  uuid      String   @unique @default(uuid())
+  firstName String   @map("first_name")
+  lastName  String   @map("last_name")
+  userName  String   @map("user_name")
+  email     String   @unique
+  password  String
+  role      Role     @relation(fields: [roleId], references: [uuid])
+  roleId    String   @map(name: "role_id")
+  createdAt DateTime @default(now()) @map("created_at")
+
+  token Token[]
+  cart  Cart[]
+  order Order[]
+
+  @@map("users")
+}
+
+model Product {
+  uuid        String   @unique @default(uuid())
+  name        String
+  description String
+  unitPrice   Float    @map("unit_price")
+  stock       Int
+  category    Category @relation(fields: [categoryId], references: [uuid])
+  categoryId  String   @map(name: "category_id")
+
+  cartItem CartItem[]
+
+  @@map("products")
+}
+
+model Category {
+  uuid String @unique @default(uuid())
+  name String
+
+  product Product[]
+
+  @@map("categories")
+}
+
+model Cart {
+  uuid       String     @unique @default(uuid())
+  user       User       @relation(fields: [userId], references: [uuid])
+  userId     String     @map(name: "user_id")
+  totalPrice Float      @map("total_price")
+  cartItem   CartItem[]
+
+  @@map("carts")
+}
+
+model CartItem {
+  uuid      String      @unique @default(uuid())
+  cart      Cart        @relation(fields: [cartId], references: [uuid])
+  cartId    String      @map(name: "cart_Id")
+  product   Product     @relation(fields: [productId], references: [uuid])
+  productId String      @map(name: "product_id")
+  quantity  Int
+  unitPrice Float       @map("unit_price")
+  orderItem OrderItem[]
+
+  @@map("cartItems")
+}
+
+model OrderItem {
+  uuid         String    @unique @default(uuid())
+  order        Order     @relation(fields: [orderId], references: [uuid])
+  orderId      String    @map(name: "order_Id")
+  quantity     Int
+  unitPrice    Float     @map("unit_price")
+  CartItem     CartItem? @relation(fields: [cartItemUuid], references: [uuid])
+  cartItemUuid String?
+  @@map("orderItems")
+
+}
+
+model Order {
+  uuid      String      @unique @default(uuid())
+  user      User        @relation(fields: [userId], references: [uuid])
+  userId    String      @map(name: "user_id")
+  OrderItem OrderItem[]
+  @@map("orders")
+}
+
+model Role {
+  uuid String @unique @default(uuid())
+  name String
+  user User[]
+
+  @@map("roles")
+}
+
+model Token {
+  id        Int      @id @default(autoincrement())
+  user      User     @relation(fields: [userId], references: [uuid])
+  userId    String   @map(name: "user_id")
+  jti       String   @unique @default(uuid())
+  createdAt DateTime @default(now()) @map(name: "created_at")
+
+  @@map(name: "tokens")
+}
