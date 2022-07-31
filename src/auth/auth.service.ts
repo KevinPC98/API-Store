@@ -1,9 +1,10 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateUserDto } from './dto/request/create-user.dto';
-import { hashSync } from 'bcryptjs';
+import { compareSync, hashSync } from 'bcryptjs';
 import { plainToInstance } from 'class-transformer';
 import { UserDto } from './dto/response/user.dto';
+import { LoginDto } from './dto/request/login.dto';
 
 @Injectable()
 export class AuthService {
@@ -34,5 +35,27 @@ export class AuthService {
     });
 
     return plainToInstance(UserDto, user);
+  }
+
+  async login(input: LoginDto) {
+    const { email, password } = input;
+    const user = await this.prisma.user.findFirst({
+      where: {
+        email,
+      },
+      select: {
+        password: true,
+      },
+    });
+
+    if (!user) {
+      throw new UnauthorizedException('Invalid credentials');
+    }
+
+    const isValid = compareSync(password, user.password);
+
+    if (!isValid) throw new UnauthorizedException('Invalid credentials');
+
+    console.log(user);
   }
 }
