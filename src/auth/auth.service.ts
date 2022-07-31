@@ -1,16 +1,15 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
-import { SignUpDto } from './dto/request/sign-up.dto';
+import { CreateUserDto } from './dto/request/create-user.dto';
 import { hashSync } from 'bcryptjs';
 import { plainToInstance } from 'class-transformer';
 import { UserDto } from './dto/response/user.dto';
-import { Prisma, User } from '@prisma/client';
 
 @Injectable()
 export class AuthService {
   constructor(private prisma: PrismaService) {}
 
-  async createUser(signUpDto: SignUpDto) {
+  async createUser(input: CreateUserDto): Promise<UserDto> {
     const role = await this.prisma.role.findFirst({
       where: {
         name: 'CLIENT',
@@ -21,22 +20,19 @@ export class AuthService {
       },
     });
 
-    const { password } = signUpDto;
-    signUpDto.password = hashSync(password, 10);
+    const { password, ...data } = input;
     const user = await this.prisma.user.create({
       data: {
-        ...signUpDto,
-      },
-      role: {
-        connect: {
-          uuid: role.uuid,
+        ...data,
+        password: hashSync(password, 10),
+        role: {
+          connect: {
+            uuid: role?.uuid,
+          },
         },
       },
     });
 
-    const userDto: UserDto = signUpDto;
-    console.log(userDto);
-
-    //return plainToInstance(UserDto, {});
+    return plainToInstance(UserDto, user);
   }
 }

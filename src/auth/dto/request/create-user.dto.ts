@@ -1,9 +1,8 @@
 import { Exclude, Expose } from 'class-transformer';
-import { IsEmail, IsEnum, IsNotEmpty, IsString, Length } from 'class-validator';
-import { Role } from '../../../common/enum';
+import { IsEmail, IsNotEmpty, IsString, Length } from 'class-validator';
 
 @Exclude()
-export class SignUpDto {
+export class CreateUserDto {
   @Expose()
   @IsNotEmpty()
   @IsString()
@@ -29,8 +28,8 @@ export class SignUpDto {
   @Length(8, 20)
   password: string;
 
-  @Expose()
+  /*   @Expose()
   @IsNotEmpty()
   @IsEnum(Role)
-  role: Role;
+  role: Role; */
 }
