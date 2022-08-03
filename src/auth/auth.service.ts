@@ -57,7 +57,7 @@ export class AuthService {
 
     const token = await this.prisma.token.create({
       data: {
-        userId: user.uuid,
+        userUuid: user.uuid,
       },
     });
 
