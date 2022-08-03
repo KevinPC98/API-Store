@@ -17,8 +17,8 @@ model User {
   userName  String   @map("user_name")
   email     String   @unique
   password  String
-  role      Role     @relation(fields: [roleId], references: [uuid])
-  roleId    String   @map(name: "role_id")
+  role      Role     @relation(fields: [roleUuid], references: [uuid])
+  roleUuid  String   @map(name: "role_uuid")
   createdAt DateTime @default(now()) @map("created_at")
 
   token Token[]
@@ -29,13 +29,13 @@ model User {
 }
 
 model Product {
-  uuid        String   @unique @default(uuid())
-  name        String
-  description String
-  unitPrice   Float    @map("unit_price")
-  stock       Int
-  category    Category @relation(fields: [categoryId], references: [uuid])
-  categoryId  String   @map(name: "category_id")
+  uuid         String   @unique @default(uuid())
+  name         String
+  description  String
+  unitPrice    Float    @map("unit_price")
+  stock        Int
+  category     Category @relation(fields: [categoryUuid], references: [uuid])
+  categoryUuid String   @map(name: "category_uuid")
 
   cartItem CartItem[]
 
@@ -53,8 +53,8 @@ model Category {
 
 model Cart {
   uuid       String     @unique @default(uuid())
-  user       User       @relation(fields: [userId], references: [uuid])
-  userId     String     @map(name: "user_id")
+  user       User       @relation(fields: [userUuid], references: [uuid])
+  userUuid   String     @map(name: "user_uuid")
   totalPrice Float      @map("total_price")
   cartItem   CartItem[]
 
@@ -62,35 +62,36 @@ model Cart {
 }
 
 model CartItem {
-  uuid      String      @unique @default(uuid())
-  cart      Cart        @relation(fields: [cartId], references: [uuid])
-  cartId    String      @map(name: "cart_Id")
-  product   Product     @relation(fields: [productId], references: [uuid])
-  productId String      @map(name: "product_id")
-  quantity  Int
-  unitPrice Float       @map("unit_price")
-  orderItem OrderItem[]
+  uuid        String      @unique @default(uuid())
+  cart        Cart        @relation(fields: [cartUuid], references: [uuid])
+  cartUuid    String      @map(name: "cart_uud")
+  product     Product     @relation(fields: [productUuid], references: [uuid])
+  productUuid String      @map(name: "product_uuid")
+  quantity    Int
+  unitPrice   Float       @map("unit_price")
+  orderItem   OrderItem[]
 
   @@map("cartItems")
 }
 
 model OrderItem {
   uuid         String    @unique @default(uuid())
-  order        Order     @relation(fields: [orderId], references: [uuid])
-  orderId      String    @map(name: "order_Id")
+  order        Order     @relation(fields: [orderUuid], references: [uuid])
+  orderUuid    String    @map(name: "order_uuid")
   quantity     Int
   unitPrice    Float     @map("unit_price")
   CartItem     CartItem? @relation(fields: [cartItemUuid], references: [uuid])
   cartItemUuid String?
-  @@map("orderItems")
 
+  @@map("orderItems")
 }
 
 model Order {
   uuid      String      @unique @default(uuid())
-  user      User        @relation(fields: [userId], references: [uuid])
-  userId    String      @map(name: "user_id")
+  user      User        @relation(fields: [userUuid], references: [uuid])
+  userUuid  String      @map(name: "user_uuid")
   OrderItem OrderItem[]
+
   @@map("orders")
 }
 
@@ -104,8 +105,8 @@ model Role {
 
 model Token {
   id        Int      @id @default(autoincrement())
-  user      User     @relation(fields: [userId], references: [uuid])
-  userId    String   @map(name: "user_id")
+  user      User     @relation(fields: [userUuid], references: [uuid])
+  userUuid  String   @map(name: "user_uuid")
   jti       String   @unique @default(uuid())
   createdAt DateTime @default(now()) @map(name: "created_at")
 
