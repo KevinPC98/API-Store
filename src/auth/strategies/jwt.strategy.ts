@@ -1,20 +1,24 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { ExtractJwt, Strategy } from 'passport-jwt';
 import { PassportStrategy } from '@nestjs/passport';
-import { Strategy } from 'passport-local';
-import { PrismaService } from '../../prisma/prisma.service';
+import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { AuthService } from '../auth.service';
+import { PrismaService } from 'src/prisma/prisma.service';
 
 @Injectable()
-export class LocalStrategy extends PassportStrategy(Strategy) {
+export class JwtStrategy extends PassportStrategy(Strategy) {
   constructor(
     private readonly authService: AuthService,
     private readonly prismaService: PrismaService,
   ) {
-    super();
+    super({
+      jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
+      ignoreExpiration: false,
+      secretOrKey: process.env.JWT_SECRET_KEY as string,
+    });
   }
 
   async validate(payload: any): Promise<any> {
-    console.log('PAYLOAD');
+    console.log('jwt');
     console.log(payload);
     try {
       const token = await this.prismaService.token.findUnique({
@@ -30,14 +34,11 @@ export class LocalStrategy extends PassportStrategy(Strategy) {
         },
       });
 
+      //const user = token?.user;
+
+      console.log('Serraa?');
       console.log(token);
-      return token;
-      /*       return {
-        uuid: user.uuid,
-        role: user.role,
-      }; 
       return true;
-      */
     } catch (error) {
       throw new UnauthorizedException('token is invalid');
     }
