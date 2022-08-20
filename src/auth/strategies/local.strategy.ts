@@ -14,8 +14,6 @@ export class LocalStrategy extends PassportStrategy(Strategy) {
   }
 
   async validate(payload: any): Promise<any> {
-    console.log('PAYLOAD');
-    console.log(payload);
     try {
       const token = await this.prismaService.token.findUnique({
         where: {
@@ -30,7 +28,6 @@ export class LocalStrategy extends PassportStrategy(Strategy) {
         },
       });
 
-      console.log(token);
       return token;
       /*       return {
         uuid: user.uuid,

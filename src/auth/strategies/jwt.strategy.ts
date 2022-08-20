@@ -18,8 +18,6 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
   }
 
   async validate(payload: any): Promise<any> {
-    console.log('jwt');
-    console.log(payload);
     try {
       const token = await this.prismaService.token.findUnique({
         where: {
@@ -36,8 +34,6 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
 
       //const user = token?.user;
 
-      console.log('Serraa?');
-      console.log(token);
       return true;
     } catch (error) {
       throw new UnauthorizedException('token is invalid');

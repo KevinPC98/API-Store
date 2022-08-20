@@ -64,7 +64,6 @@ export class AuthService {
       throw new UnauthorizedException('Invalid credentials');
     }
 
-    console.log(user);
     const isValid = compareSync(password, user.password);
 
     if (!isValid) throw new UnauthorizedException('Invalid credentials');
