@@ -1,18 +1,24 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateUserDto } from './dto/request/create-user.dto';
-import { compareSync, hashSync } from 'bcryptjs';
+import { compareSync } from 'bcryptjs';
 import { plainToInstance } from 'class-transformer';
 import { UserDto } from './dto/response/user.dto';
 import { LoginDto } from './dto/request/login.dto';
 import { JwtService } from '@nestjs/jwt';
 import { TokenDto } from './dto/response/token.dto';
+import { UserWithTokenDto } from './dto/response/user-with-token.dto';
+import { UsersService } from 'src/users/users.service';
 
 @Injectable()
 export class AuthService {
-  constructor(private prisma: PrismaService, private jwtService: JwtService) {}
+  constructor(
+    private prisma: PrismaService,
+    private jwtService: JwtService,
+    private userService: UsersService,
+  ) {}
 
-  async createUser(input: CreateUserDto): Promise<UserDto> {
+  async createUser(input: CreateUserDto): Promise<UserWithTokenDto> {
     const role = await this.prisma.role.findFirst({
       where: {
         name: 'CLIENT',
@@ -23,20 +29,32 @@ export class AuthService {
       },
     });
 
-    const { password, ...data } = input;
-    const user = await this.prisma.user.create({
+    if (!role) {
+      throw new UnauthorizedException('Invalid credentials');
+    }
+
+    const userByEmail = await this.userService.findOneByEmail(input.email);
+
+    if (userByEmail) {
+      throw new UnauthorizedException('Invalid credentials');
+    }
+
+    const user = await this.userService.createUser(input, role.uuid);
+
+    const { jti } = await this.prisma.token.create({
       data: {
-        ...data,
-        password: hashSync(password, 10),
-        role: {
-          connect: {
-            uuid: role?.uuid,
-          },
-        },
+        userUuid: user.uuid,
       },
     });
 
-    return plainToInstance(UserDto, user);
+    user.role = role.name;
+
+    const token = await this.generateAccessToken(jti);
+
+    return plainToInstance(UserWithTokenDto, {
+      user,
+      token,
+    });
   }
 
   async login(input: LoginDto): Promise<TokenDto> {
@@ -48,12 +66,12 @@ export class AuthService {
     });
 
     if (!user) {
-      throw new UnauthorizedException('Invalid credentials'); //should be 403
+      throw new UnauthorizedException('Invalid credentials');
     }
 
     const isValid = compareSync(password, user.password);
 
-    if (!isValid) throw new UnauthorizedException('Invalid credentials'); //should be 403
+    if (!isValid) throw new UnauthorizedException('Invalid credentials');
 
     const token = await this.prisma.token.create({
       data: {
