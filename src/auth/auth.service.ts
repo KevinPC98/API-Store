@@ -3,7 +3,6 @@ import { PrismaService } from '../prisma/prisma.service';
 import { CreateUserDto } from './dto/request/create-user.dto';
 import { compareSync } from 'bcryptjs';
 import { plainToInstance } from 'class-transformer';
-import { UserDto } from './dto/response/user.dto';
 import { LoginDto } from './dto/request/login.dto';
 import { JwtService } from '@nestjs/jwt';
 import { TokenDto } from './dto/response/token.dto';
@@ -59,16 +58,13 @@ export class AuthService {
 
   async login(input: LoginDto): Promise<TokenDto> {
     const { email, password } = input;
-    const user = await this.prisma.user.findFirst({
-      where: {
-        email,
-      },
-    });
+    const user = await this.userService.findOneByEmail(email);
 
     if (!user) {
       throw new UnauthorizedException('Invalid credentials');
     }
 
+    console.log(user);
     const isValid = compareSync(password, user.password);
 
     if (!isValid) throw new UnauthorizedException('Invalid credentials');
