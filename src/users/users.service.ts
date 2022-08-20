@@ -2,9 +2,10 @@ import { Injectable } from '@nestjs/common';
 import { User } from '@prisma/client';
 import { hashSync } from 'bcryptjs';
 import { plainToInstance } from 'class-transformer';
-import { CreateUserDto } from 'src/auth/dto/request/create-user.dto';
+import { CreateUserDto } from 'src/users/dto/request/create-user.dto';
 import { UserDto } from 'src/auth/dto/response/user.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
+import { UpdateUserDto } from './dto/request/update-user.dto';
 
 @Injectable()
 export class UsersService {
@@ -36,4 +37,6 @@ export class UsersService {
 
     return plainToInstance(UserDto, user);
   }
+
+  async updateUser(input: UpdateUserDto): Promise<void> {}
 }
