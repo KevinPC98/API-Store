@@ -27,14 +27,23 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
           user: {
             select: {
               uuid: true,
+              role: {
+                select: {
+                  name: true,
+                },
+              },
             },
           },
         },
       });
 
-      //const user = token?.user;
+      console.log(token?.user.uuid);
+      console.log(token?.user.role.name);
 
-      return true;
+      return {
+        uuid: token?.user.uuid,
+        role: token?.user.role.name,
+      };
     } catch (error) {
       throw new UnauthorizedException('token is invalid');
     }

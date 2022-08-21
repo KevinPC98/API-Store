@@ -1,5 +1,5 @@
 import { Exclude, Expose } from 'class-transformer';
-import { IsEmail, IsNotEmpty, IsString, Length } from 'class-validator';
+import { IsNotEmpty, IsString, Length } from 'class-validator';
 
 @Exclude()
 export class UpdateUserDto {
@@ -19,17 +19,7 @@ export class UpdateUserDto {
 
   @Expose()
   @IsNotEmpty()
-  @IsEmail()
-  email: string;
-
-  @Expose()
-  @IsNotEmpty()
   @IsString()
   @Length(8, 20)
   password: string;
-
-  /*   @Expose()
-  @IsNotEmpty()
-  @IsEnum(Role)
-  role: Role; */
 }
