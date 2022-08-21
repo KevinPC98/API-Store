@@ -35,4 +35,16 @@ export class UsersService {
 
     return user;
   }
+
+  async updateUser(
+    where: Prisma.UserWhereUniqueInput,
+    data: Prisma.UserUpdateInput,
+  ): Promise<UserDto> {
+    const user = await this.prisma.user.update({
+      data,
+      where,
+    });
+
+    return plainToInstance(UserDto, user);
+  }
 }
