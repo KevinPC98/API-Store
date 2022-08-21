@@ -4,7 +4,6 @@ import { CreateUserDto } from '../users/dto/request/create-user.dto';
 import { LoginDto } from './dto/request/login.dto';
 import { UserWithTokenDto } from './dto/response/user-with-token.dto';
 import { TokenDto } from './dto/response/token.dto';
-import { UserDto } from './dto/response/user.dto';
 import { JwtAuthGuard } from './guards/jwt-auth.guard';
 import { Roles } from './decorators/role.decorator';
 import { Role } from 'src/common/enum';
@@ -23,15 +22,13 @@ export class AuthController {
   //@UseGuards(LocalAuthGuard)
   @Post('/login')
   async logIn(@Body() input: LoginDto): Promise<TokenDto> {
-    return this.authService.login(input);
+    return await this.authService.login(input);
   }
 
+  @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(Role.client)
-  //@UseGuards(JwtAuthGuard)
-  //@UseGuards(RolesGuard)
   @Get('/profile')
   async gettProfile(): Promise<string> {
-    console.log('ENTRO');
     return 'GET PROFILE';
   }
 }
