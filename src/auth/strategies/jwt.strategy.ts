@@ -37,9 +37,6 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
         },
       });
 
-      console.log(token?.user.uuid);
-      console.log(token?.user.role.name);
-
       return {
         uuid: token?.user.uuid,
         role: token?.user.role.name,

@@ -8,6 +8,7 @@ import { JwtService } from '@nestjs/jwt';
 import { TokenDto } from './dto/response/token.dto';
 import { UserWithTokenDto } from './dto/response/user-with-token.dto';
 import { UsersService } from 'src/users/users.service';
+import { Role } from 'src/common/enum';
 
 @Injectable()
 export class AuthService {
@@ -20,7 +21,7 @@ export class AuthService {
   async createUser(input: CreateUserDto): Promise<UserWithTokenDto> {
     const role = await this.prisma.role.findFirst({
       where: {
-        name: 'CLIENT',
+        name: Role.client,
       },
       select: {
         uuid: true,
