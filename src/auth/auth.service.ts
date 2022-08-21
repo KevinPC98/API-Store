@@ -33,7 +33,7 @@ export class AuthService {
       throw new UnauthorizedException('Invalid credentials');
     }
 
-    const userByEmail = await this.userService.findOneByEmail(input.email);
+    const userByEmail = await this.userService.findOne({ email: input.email });
 
     if (userByEmail) {
       throw new UnauthorizedException('Invalid credentials');
@@ -59,11 +59,13 @@ export class AuthService {
 
   async login(input: LoginDto): Promise<TokenDto> {
     const { email, password } = input;
-    const user = await this.userService.findOneByEmail(email);
+    const user = await this.userService.findOne({ email });
 
     if (!user) {
       throw new UnauthorizedException('Invalid credentials');
     }
+
+    console.log(user);
 
     const isValid = compareSync(password, user.password);
 
