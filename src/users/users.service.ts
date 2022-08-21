@@ -3,7 +3,7 @@ import { Prisma, User } from '@prisma/client';
 import { hashSync } from 'bcryptjs';
 import { plainToInstance } from 'class-transformer';
 import { CreateUserDto } from 'src/users/dto/request/create-user.dto';
-import { UserDto } from 'src/auth/dto/response/user.dto';
+import { UserDto } from 'src/users/dto/response/user.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
 
 @Injectable()
