@@ -1,4 +1,8 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateUserDto } from '../users/dto/request/create-user.dto';
 import { compareSync } from 'bcryptjs';
@@ -102,5 +106,25 @@ export class AuthService {
       accessToken,
       expirationToken,
     };
+  }
+
+  async logout(token?: string): Promise<boolean> {
+    if (!token) return false;
+
+    try {
+      const { sub } = this.jwtService.verify(token, {
+        secret: process.env.JWT_SECRET_KEY as string,
+      });
+
+      await this.prisma.token.delete({
+        where: {
+          jti: sub,
+        },
+      });
+
+      return true;
+    } catch (e) {
+      throw new BadRequestException('Token is invalid');
+    }
   }
 }
