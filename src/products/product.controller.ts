@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  Get,
   Param,
   Patch,
   Post,
@@ -40,5 +41,11 @@ export class ProductController {
       { uuid: product.uuid },
       input,
     );
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Get('/:uuid')
+  async findOne(@Param() product: ProductDto): Promise<ProductDto> {
+    return await this.productService.findOne({ uuid: product.uuid });
   }
 }

@@ -1,4 +1,8 @@
-import { Injectable } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { Prisma } from '@prisma/client';
 import { plainToInstance } from 'class-transformer';
 import { PrismaService } from 'src/prisma/prisma.service';
@@ -35,6 +39,16 @@ export class ProductService {
     });
 
     console.log(product);
+
+    return plainToInstance(ProductDto, product);
+  }
+
+  async findOne(where: Prisma.ProductWhereUniqueInput): Promise<ProductDto> {
+    const product = await this.prismaService.product.findFirst({ where });
+
+    if (!product) {
+      throw new NotFoundException('Product does not exist');
+    }
 
     return plainToInstance(ProductDto, product);
   }
