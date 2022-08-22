@@ -1,4 +1,5 @@
 import { Injectable } from '@nestjs/common';
+import { Prisma } from '@prisma/client';
 import { plainToInstance } from 'class-transformer';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { CreateProductDto } from './dto/request/create-product.dto';
@@ -20,6 +21,20 @@ export class ProductService {
         },
       },
     });
+
+    return plainToInstance(ProductDto, product);
+  }
+
+  async updateProduct(
+    where: Prisma.ProductWhereUniqueInput,
+    data: Prisma.ProductUpdateInput,
+  ): Promise<ProductDto> {
+    const product = await this.prismaService.product.update({
+      where,
+      data,
+    });
+
+    console.log(product);
 
     return plainToInstance(ProductDto, product);
   }
