@@ -48,4 +48,9 @@ export class ProductService {
 
     return plainToInstance(ProductDto, product);
   }
+
+  async getAll(): Promise<ProductDto[]> {
+    const products = await this.prismaService.product.findMany();
+    return plainToInstance(ProductDto, products);
+  }
 }

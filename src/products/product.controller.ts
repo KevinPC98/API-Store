@@ -43,6 +43,12 @@ export class ProductController {
   }
 
   @UseGuards(JwtAuthGuard)
+  @Get('/all')
+  async getAll(): Promise<ProductDto[]> {
+    return await this.productService.getAll();
+  }
+
+  @UseGuards(JwtAuthGuard)
   @Get('/:uuid')
   async findOne(@Param() product: ProductDto): Promise<ProductDto> {
     return await this.productService.findOne({ uuid: product.uuid });
