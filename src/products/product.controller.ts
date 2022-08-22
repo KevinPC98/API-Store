@@ -36,7 +36,6 @@ export class ProductController {
     @Body() input: UpdateProductDto,
     @Param() product: ProductDto,
   ): Promise<ProductDto> {
-    console.log(product);
     return await this.productService.updateProduct(
       { uuid: product.uuid },
       input,
