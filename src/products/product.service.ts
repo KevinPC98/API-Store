@@ -1,9 +1,12 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
 import { plainToInstance } from 'class-transformer';
+import { PaginationArgs } from 'src/common/dto/request/pagination-options.dto';
+import { PaginationDto } from 'src/common/dto/response/pagination.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { CreateProductDto } from './dto/request/create-product.dto';
 import { ProductDto } from './dto/response/product.dto';
+import { ProductWithPaginationDto } from './dto/response/products-with-pagination.dto';
 
 @Injectable()
 export class ProductService {
@@ -49,8 +52,46 @@ export class ProductService {
     return plainToInstance(ProductDto, product);
   }
 
-  async getAll(): Promise<ProductDto[]> {
-    const products = await this.prismaService.product.findMany();
-    return plainToInstance(ProductDto, products);
+  async getAll(
+    paginationArgs: PaginationArgs,
+    category: string,
+  ): Promise<ProductWithPaginationDto> {
+    const { page, take } = paginationArgs;
+    let where = {};
+    let nextPage: number | null = null;
+    let previousPage: number | null = null;
+
+    if (category) {
+      where = {
+        category: {
+          name: category,
+        },
+      };
+    }
+
+    const totalItems = await this.prismaService.product.count({ where });
+    const totalPages = Math.ceil(totalItems / take);
+
+    const products = await this.prismaService.product.findMany({
+      skip: take * (page - 1),
+      take,
+      where,
+    });
+
+    if (totalPages) {
+      nextPage = page === totalPages ? null : page + 1;
+      previousPage = page === 1 ? null : page - 1;
+    }
+
+    const pagination: PaginationDto = {
+      currentPage: page,
+      itemsPerPage: take,
+      nextPage,
+      previousPage,
+      totalItems,
+      totalPages,
+    };
+
+    return plainToInstance(ProductWithPaginationDto, { products, pagination });
   }
 }
