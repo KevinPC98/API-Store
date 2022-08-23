@@ -7,6 +7,7 @@ import { PassportModule } from '@nestjs/passport';
 import { LocalStrategy } from './strategies/local.strategy';
 import { JwtStrategy } from './strategies/jwt.strategy';
 import { UsersService } from 'src/users/users.service';
+import { CartService } from 'src/carts/cart.service';
 
 @Module({
   imports: [
@@ -24,6 +25,7 @@ import { UsersService } from 'src/users/users.service';
     LocalStrategy,
     JwtStrategy,
     UsersService,
+    CartService,
   ],
 })
 export class AuthModule {}

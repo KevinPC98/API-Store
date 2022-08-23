@@ -8,4 +8,4 @@ import { CartService } from './cart.service';
   controllers: [CartController],
   providers: [CartService, PrismaService],
 })
-export class AuthModule {}
+export class CartModule {}

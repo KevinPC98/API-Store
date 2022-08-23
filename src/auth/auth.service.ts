@@ -13,6 +13,7 @@ import { TokenDto } from './dto/response/token.dto';
 import { UserWithTokenDto } from './dto/response/user-with-token.dto';
 import { UsersService } from 'src/users/users.service';
 import { Role } from 'src/common/enum';
+import { CartService } from 'src/carts/cart.service';
 
 @Injectable()
 export class AuthService {
@@ -20,6 +21,7 @@ export class AuthService {
     private prisma: PrismaService,
     private jwtService: JwtService,
     private userService: UsersService,
+    private cartService: CartService,
   ) {}
 
   async createUser(input: CreateUserDto): Promise<UserWithTokenDto> {
@@ -52,6 +54,15 @@ export class AuthService {
     });
 
     user.role = role.name;
+
+    await this.cartService.createCart({
+      totalPrice: 0,
+      user: {
+        connect: {
+          uuid: user.uuid,
+        },
+      },
+    });
 
     const token = await this.generateAccessToken(jti);
 
