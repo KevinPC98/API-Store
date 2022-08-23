@@ -21,7 +21,6 @@ export class AuthController {
 
   @Get('/logout')
   async logOut(@Query('token') token: string): Promise<boolean> {
-    console.log(token);
     return await this.authService.logout(token);
   }
 }
