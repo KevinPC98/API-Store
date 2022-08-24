@@ -11,5 +11,8 @@ export class CartDto {
   user: UserDto;
 
   @Expose()
-  products: CartItem;
+  totalPrice: number;
+
+  @Expose()
+  products: CartItem[];
 }

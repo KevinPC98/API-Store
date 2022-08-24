@@ -2,12 +2,10 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { Cart, Prisma } from '@prisma/client';
 import { plainToInstance } from 'class-transformer';
 import { PrismaService } from 'src/prisma/prisma.service';
-import { ProductDto } from 'src/products/dto/response/product.dto';
 import { ProductService } from 'src/products/product.service';
 import { UserDto } from 'src/users/dto/response/user.dto';
 import { UsersService } from 'src/users/users.service';
 import { PickedProductDto } from './dto/request/picked-product.dto';
-import { CartItemDto } from './dto/response/cart-item.dto';
 import { CartDto } from './dto/response/cart.dto';
 
 @Injectable()
@@ -32,6 +30,7 @@ export class CartService {
       },
       select: {
         uuid: true,
+        totalPrice: true,
         cartItem: {
           select: {
             product: true,
@@ -44,10 +43,14 @@ export class CartService {
     if (!cart) {
       throw new NotFoundException('Cart does not exist');
     }
+
+    console.log(cart.cartItem);
+
     return plainToInstance(CartDto, {
       uuid: cart.uuid,
+      totalPrice: cart.totalPrice,
       user: plainToInstance(UserDto, user),
-      products: plainToInstance(CartItemDto, cart.cartItem),
+      products: cart.cartItem,
     });
   }
 
@@ -87,14 +90,11 @@ export class CartService {
       pickedProductDto.quantity * productFound.unitPrice + cartFound.totalPrice;
     let quantity = pickedProductDto.quantity;
     let cartItemUuid = '';
-    console.log(totalPrice);
 
     if (cartFound?.cartItem.length) {
-      console.log('entro');
       quantity = quantity + cartFound.cartItem[0].quantity;
       cartItemUuid = cartFound.cartItem[0].uuid;
     }
-    console.log(totalPrice);
 
     const cart = await this.prismaService.cart.update({
       data: {

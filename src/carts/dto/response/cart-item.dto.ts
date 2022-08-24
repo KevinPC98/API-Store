@@ -7,7 +7,7 @@ export class CartItemDto {
   uuid: string;
 
   @Expose()
-  products: ProductDto[];
+  products: ProductDto;
 
   @Expose()
   quantity: number;
