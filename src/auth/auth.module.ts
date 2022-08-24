@@ -8,6 +8,7 @@ import { LocalStrategy } from './strategies/local.strategy';
 import { JwtStrategy } from './strategies/jwt.strategy';
 import { UsersService } from 'src/users/users.service';
 import { CartService } from 'src/carts/cart.service';
+import { ProductService } from 'src/products/product.service';
 
 @Module({
   imports: [
@@ -26,6 +27,7 @@ import { CartService } from 'src/carts/cart.service';
     JwtStrategy,
     UsersService,
     CartService,
+    ProductService,
   ],
 })
 export class AuthModule {}
