@@ -44,8 +44,6 @@ export class CartService {
       throw new NotFoundException('Cart does not exist');
     }
 
-    console.log(cart.cartItem);
-
     return plainToInstance(CartDto, {
       uuid: cart.uuid,
       totalPrice: cart.totalPrice,
@@ -57,7 +55,7 @@ export class CartService {
   async addItemInCart(
     user: Prisma.UserWhereUniqueInput,
     pickedProductDto: PickedProductDto,
-  ) {
+  ): Promise<CartDto> {
     const productFound = await this.productService.findOne({
       uuid: pickedProductDto.productUuid,
     });
@@ -84,7 +82,6 @@ export class CartService {
     if (!cartFound) {
       throw new NotFoundException('Cart does not exist');
     }
-    console.log(cartFound);
 
     const totalPrice =
       pickedProductDto.quantity * productFound.unitPrice + cartFound.totalPrice;
@@ -96,7 +93,7 @@ export class CartService {
       cartItemUuid = cartFound.cartItem[0].uuid;
     }
 
-    const cart = await this.prismaService.cart.update({
+    await this.prismaService.cart.update({
       data: {
         cartItem: {
           upsert: {
@@ -120,19 +117,6 @@ export class CartService {
       },
     });
 
-    const cartFoundView = await this.prismaService.cart.findFirst({
-      where: {
-        userUuid: user.uuid,
-      },
-      select: {
-        uuid: true,
-        totalPrice: true,
-        cartItem: true,
-      },
-    });
-
-    console.log('___________________ FINAL ________________________');
-    console.log(cartFoundView);
-    console.log('___________________________________________');
+    return await this.getCart({ uuid: user.uuid });
   }
 }

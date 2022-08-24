@@ -27,7 +27,7 @@ export class CartController {
     @Param() product: ProductDto,
     @GetUser() user: User,
     @Body() cartItem: CartItemDto,
-  ): Promise<void> {
+  ): Promise<CartDto> {
     return await this.cartService.addItemInCart(
       { uuid: user.uuid },
       { productUuid: product.uuid, quantity: cartItem.quantity },
