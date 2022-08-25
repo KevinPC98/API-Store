@@ -33,7 +33,21 @@ export class CartService {
         totalPrice: true,
         cartItem: {
           select: {
-            product: true,
+            uuid: true,
+            product: {
+              select: {
+                uuid: true,
+                name: true,
+                description: true,
+                stock: true,
+                unitPrice: true,
+                category: {
+                  select: {
+                    name: true,
+                  },
+                },
+              },
+            },
             quantity: true,
           },
         },
@@ -118,5 +132,58 @@ export class CartService {
     });
 
     return await this.getCart({ uuid: user.uuid });
+  }
+
+  async removeItemInCart(
+    userInput: Prisma.UserWhereUniqueInput,
+    productUuid: string,
+  ): Promise<CartDto> {
+    const cartItem = await this.prismaService.cartItem.findFirst({
+      where: {
+        product: {
+          uuid: productUuid,
+        },
+        cart: {
+          user: {
+            uuid: userInput.uuid,
+          },
+        },
+      },
+      select: {
+        cart: true,
+        product: true,
+        uuid: true,
+        quantity: true,
+        unitPrice: true,
+        productUuid: true,
+        cartUuid: true,
+      },
+    });
+
+    console.log(cartItem);
+
+    if (!cartItem) {
+      throw new NotFoundException('Item does not exist in the cart');
+    }
+
+    await this.prismaService.$transaction([
+      this.prismaService.cartItem.delete({
+        where: {
+          uuid: cartItem.uuid,
+        },
+      }),
+
+      this.prismaService.cart.update({
+        where: {
+          uuid: cartItem.cartUuid,
+        },
+        data: {
+          totalPrice:
+            cartItem.cart.totalPrice - cartItem.quantity * cartItem.unitPrice,
+        },
+      }),
+    ]);
+
+    return await this.getCart({ uuid: userInput.uuid });
   }
 }

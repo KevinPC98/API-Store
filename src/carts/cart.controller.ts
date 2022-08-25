@@ -1,4 +1,12 @@
-import { Body, Controller, Get, Param, Post, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Param,
+  Patch,
+  Post,
+  UseGuards,
+} from '@nestjs/common';
 import { User } from '@prisma/client';
 import { GetUser } from 'src/auth/decorators/get-user.decorator';
 import { Roles } from 'src/auth/decorators/role.decorator';
@@ -31,6 +39,19 @@ export class CartController {
     return await this.cartService.addItemInCart(
       { uuid: user.uuid },
       { productUuid: product.uuid, quantity: cartItem.quantity },
+    );
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Roles(Role.client)
+  @Patch('/remove-item/:uuid')
+  async removeProduct(
+    @Param() product: ProductDto,
+    @GetUser() user: User,
+  ): Promise<CartDto> {
+    return await this.cartService.removeItemInCart(
+      { uuid: user.uuid },
+      product.uuid,
     );
   }
 }
