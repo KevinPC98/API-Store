@@ -55,7 +55,6 @@ model Cart {
   uuid       String     @unique @default(uuid())
   user       User       @relation(fields: [userUuid], references: [uuid])
   userUuid   String     @map(name: "user_uuid")
-  totalPrice Float      @map("total_price")
   cartItem   CartItem[]
 
   @@map("carts")
