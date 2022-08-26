@@ -30,7 +30,6 @@ export class CartService {
       },
       select: {
         uuid: true,
-        totalPrice: true,
         cartItem: {
           select: {
             uuid: true,
@@ -60,9 +59,14 @@ export class CartService {
 
     return plainToInstance(CartDto, {
       uuid: cart.uuid,
-      totalPrice: cart.totalPrice,
       user: plainToInstance(UserDto, user),
       products: cart.cartItem,
+    });
+  }
+
+  async createOrder(data: Prisma.OrderCreateInput): Promise<void> {
+    await this.prismaService.order.create({
+      data,
     });
   }
 
@@ -84,10 +88,14 @@ export class CartService {
       },
       select: {
         uuid: true,
-        totalPrice: true,
         cartItem: {
           where: {
             productUuid: pickedProductDto.productUuid,
+          },
+          select: {
+            uuid: true,
+            quantity: true,
+            orderUuid: true,
           },
         },
       },
@@ -97,8 +105,6 @@ export class CartService {
       throw new NotFoundException('Cart does not exist');
     }
 
-    const totalPrice =
-      pickedProductDto.quantity * productFound.unitPrice + cartFound.totalPrice;
     let quantity = pickedProductDto.quantity;
     let cartItemUuid = '';
 
@@ -116,15 +122,14 @@ export class CartService {
             },
             create: {
               quantity,
-              unitPrice: productFound.unitPrice,
               productUuid: pickedProductDto.productUuid,
+              orderUuid: '',
             },
             update: {
               quantity,
             },
           },
         },
-        totalPrice,
       },
       where: {
         uuid: cartFound.uuid,
@@ -154,7 +159,6 @@ export class CartService {
         product: true,
         uuid: true,
         quantity: true,
-        unitPrice: true,
         productUuid: true,
         cartUuid: true,
       },
@@ -177,13 +181,84 @@ export class CartService {
         where: {
           uuid: cartItem.cartUuid,
         },
-        data: {
-          totalPrice:
-            cartItem.cart.totalPrice - cartItem.quantity * cartItem.unitPrice,
-        },
+        data: {},
       }),
     ]);
 
     return await this.getCart({ uuid: userInput.uuid });
   }
+
+  /*   async updateOrder(
+    userInput: Prisma.UserWhereUniqueInput,
+    pickedProductDto: PickedProductDto,
+  ): Promise<void> {
+    const { productUuid, quantity } = pickedProductDto;
+
+    const cartItemFound = await this.prismaService.cartItem.findFirst({
+      where: {
+        product: {
+          uuid: pickedProductDto.productUuid,
+        },
+        cart: {
+          user: {
+            uuid: userInput.uuid,
+          },
+        },
+      },
+      select: {
+        uuid: true,
+        quantity: true,
+        cart: true,
+        product: true,
+      },
+    });
+
+    if (!cartItemFound) {
+      await this.addItemInCart(userInput, {
+        productUuid,
+        quantity,
+      });
+
+    }
+
+    let order: Order;
+
+    if (!cartItemFound?.orderItem.length) {
+      order = await this.prismaService.order.create({
+        data: {
+          user: {
+            connect: {
+              uuid: userInput.uuid,
+            },
+          },
+        },
+      });
+    } else {
+      order = cartItemFound.orderItem[0].order;
+    }
+
+    const productFound = await this.productService.findOne({
+      uuid: productUuid,
+    });
+
+    //Crear el itemOrder y colocarlo en el order admeas de actualizar el stock del producto
+    const orderItem = await this.prismaService.orderItem.create({
+      data: {
+        quantity,
+        unitPrice: productFound.unitPrice,
+        order: {
+          connect: {
+            uuid: order.uuid,
+          },
+        },
+        CartItem: {
+          connect: {
+            uuid: cartItemFound?.uuid,
+          },
+        },
+      },
+    });
+
+    console.log(orderItem);
+  } */
 }

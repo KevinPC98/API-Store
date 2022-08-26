@@ -56,12 +56,20 @@ export class AuthService {
     user.role = role.name;
 
     await this.cartService.createCart({
-      totalPrice: 0,
       user: {
         connect: {
           uuid: user.uuid,
         },
       },
+    });
+
+    await this.cartService.createOrder({
+      user: {
+        connect: {
+          uuid: user.uuid,
+        },
+      },
+      wasBought: false,
     });
 
     const token = await this.generateAccessToken(jti);
