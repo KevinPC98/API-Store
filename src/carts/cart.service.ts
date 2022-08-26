@@ -154,8 +154,6 @@ export class CartService {
       },
     });
 
-    console.log(cartItem);
-
     if (!cartItem) {
       throw new NotFoundException('Item does not exist in the cart');
     }
