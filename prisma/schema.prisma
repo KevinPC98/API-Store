@@ -52,32 +52,33 @@ model Category {
 }
 
 model Cart {
-  uuid       String     @unique @default(uuid())
-  user       User       @relation(fields: [userUuid], references: [uuid])
-  userUuid   String     @map(name: "user_uuid")
-  cartItem   CartItem[]
+  uuid     String     @unique @default(uuid())
+  user     User       @relation(fields: [userUuid], references: [uuid])
+  userUuid String     @map(name: "user_uuid")
+  cartItem CartItem[]
 
   @@map("carts")
 }
 
 model CartItem {
-  uuid        String      @unique @default(uuid())
-  cart        Cart        @relation(fields: [cartUuid], references: [uuid])
-  cartUuid    String      @map(name: "cart_uuid")
-  product     Product     @relation(fields: [productUuid], references: [uuid])
-  productUuid String      @map(name: "product_uuid")
-  order        Order     @relation(fields: [orderUuid], references: [uuid])
-  orderUuid    String    @map(name: "order_uuid")
+  uuid        String  @unique @default(uuid())
+  cart        Cart    @relation(fields: [cartUuid], references: [uuid])
+  cartUuid    String  @map(name: "cart_uuid")
+  product     Product @relation(fields: [productUuid], references: [uuid])
+  productUuid String  @map(name: "product_uuid")
+  order       Order   @relation(fields: [orderUuid], references: [uuid])
+  orderUuid   String  @map(name: "order_uuid")
   quantity    Int
 
   @@map("cartItems")
 }
 
 model Order {
-  uuid      String      @unique @default(uuid())
-  user      User        @relation(fields: [userUuid], references: [uuid])
-  userUuid  String      @map(name: "user_uuid")
-  CartItem CartItem[]
+  uuid      String     @unique @default(uuid())
+  user      User       @relation(fields: [userUuid], references: [uuid])
+  userUuid  String     @map(name: "user_uuid")
+  wasBought Boolean    @map("was_bought")
+  CartItem  CartItem[]
 
   @@map("orders")
 }
