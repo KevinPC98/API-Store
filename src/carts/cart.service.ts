@@ -7,6 +7,7 @@ import { UserDto } from 'src/users/dto/response/user.dto';
 import { UsersService } from 'src/users/users.service';
 import { PickedProductDto } from './dto/request/picked-product.dto';
 import { CartDto } from './dto/response/cart.dto';
+import { ItemOrderDto } from './dto/response/item-order.dto';
 
 @Injectable()
 export class CartService {
@@ -167,16 +168,14 @@ export class CartService {
     return await this.getCart({ uuid: userInput.uuid });
   }
 
-  /*   async updateOrder(
+  async updateOrder(
     userInput: Prisma.UserWhereUniqueInput,
-    pickedProductDto: PickedProductDto,
-  ): Promise<void> {
-    const { productUuid, quantity } = pickedProductDto;
-
+    productUuid: string,
+  ): Promise<ItemOrderDto> {
     const cartItemFound = await this.prismaService.cartItem.findFirst({
       where: {
         product: {
-          uuid: pickedProductDto.productUuid,
+          uuid: productUuid,
         },
         cart: {
           user: {
@@ -187,57 +186,51 @@ export class CartService {
       select: {
         uuid: true,
         quantity: true,
-        cart: true,
-        product: true,
-      },
-    });
-
-    if (!cartItemFound) {
-      await this.addItemInCart(userInput, {
-        productUuid,
-        quantity,
-      });
-
-    }
-
-    let order: Order;
-
-    if (!cartItemFound?.orderItem.length) {
-      order = await this.prismaService.order.create({
-        data: {
-          user: {
-            connect: {
-              uuid: userInput.uuid,
+        cart: {
+          select: {
+            user: {
+              select: {
+                order: {
+                  select: {
+                    uuid: true,
+                  },
+                },
+              },
             },
           },
         },
-      });
-    } else {
-      order = cartItemFound.orderItem[0].order;
-    }
-
-    const productFound = await this.productService.findOne({
-      uuid: productUuid,
-    });
-
-    //Crear el itemOrder y colocarlo en el order admeas de actualizar el stock del producto
-    const orderItem = await this.prismaService.orderItem.create({
-      data: {
-        quantity,
-        unitPrice: productFound.unitPrice,
-        order: {
-          connect: {
-            uuid: order.uuid,
-          },
-        },
-        CartItem: {
-          connect: {
-            uuid: cartItemFound?.uuid,
-          },
-        },
+        product: true,
+        orderItem: true,
       },
     });
 
-    console.log(orderItem);
-  } */
+    console.log(cartItemFound);
+
+    if (!cartItemFound) {
+      throw new NotFoundException(
+        'Item does not exist in the cart, Please put the product in the cart',
+      );
+    }
+
+    const [orderItem, cartItemDeleted] = await this.prismaService.$transaction([
+      this.prismaService.orderItem.create({
+        data: {
+          cartItemUuid: cartItemFound.uuid,
+          orderUuid: cartItemFound.cart.user.order[0].uuid,
+        },
+      }),
+
+      this.prismaService.cartItem.delete({
+        where: {
+          uuid: cartItemFound.uuid,
+        },
+      }),
+    ]);
+
+    return plainToInstance(ItemOrderDto, {
+      uuid: orderItem.uuid,
+      cartItemUuid: cartItemFound.uuid,
+      orderUuid: cartItemFound.cart.user.order[0].uuid,
+    });
+  }
 }
