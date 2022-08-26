@@ -95,7 +95,6 @@ export class CartService {
           select: {
             uuid: true,
             quantity: true,
-            orderUuid: true,
           },
         },
       },
@@ -113,26 +112,17 @@ export class CartService {
       cartItemUuid = cartFound.cartItem[0].uuid;
     }
 
-    await this.prismaService.cart.update({
-      data: {
-        cartItem: {
-          upsert: {
-            where: {
-              uuid: cartItemUuid,
-            },
-            create: {
-              quantity,
-              productUuid: pickedProductDto.productUuid,
-              orderUuid: '',
-            },
-            update: {
-              quantity,
-            },
-          },
-        },
-      },
+    await this.prismaService.cartItem.upsert({
       where: {
-        uuid: cartFound.uuid,
+        uuid: cartItemUuid,
+      },
+      create: {
+        quantity,
+        productUuid: pickedProductDto.productUuid,
+        cartUuid: cartFound.uuid,
+      },
+      update: {
+        quantity,
       },
     });
 
@@ -170,20 +160,11 @@ export class CartService {
       throw new NotFoundException('Item does not exist in the cart');
     }
 
-    await this.prismaService.$transaction([
-      this.prismaService.cartItem.delete({
-        where: {
-          uuid: cartItem.uuid,
-        },
-      }),
-
-      this.prismaService.cart.update({
-        where: {
-          uuid: cartItem.cartUuid,
-        },
-        data: {},
-      }),
-    ]);
+    await this.prismaService.cartItem.delete({
+      where: {
+        uuid: cartItem.uuid,
+      },
+    });
 
     return await this.getCart({ uuid: userInput.uuid });
   }
