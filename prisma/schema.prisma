@@ -64,33 +64,21 @@ model Cart {
 model CartItem {
   uuid        String      @unique @default(uuid())
   cart        Cart        @relation(fields: [cartUuid], references: [uuid])
-  cartUuid    String      @map(name: "cart_uud")
+  cartUuid    String      @map(name: "cart_uuid")
   product     Product     @relation(fields: [productUuid], references: [uuid])
   productUuid String      @map(name: "product_uuid")
-  quantity    Int
-  unitPrice   Float       @map("unit_price")
-  orderItem   OrderItem[]
-
-  @@map("cartItems")
-}
-
-model OrderItem {
-  uuid         String    @unique @default(uuid())
   order        Order     @relation(fields: [orderUuid], references: [uuid])
   orderUuid    String    @map(name: "order_uuid")
-  quantity     Int
-  unitPrice    Float     @map("unit_price")
-  CartItem     CartItem? @relation(fields: [cartItemUuid], references: [uuid])
-  cartItemUuid String?
+  quantity    Int
 
-  @@map("orderItems")
+  @@map("cartItems")
 }
 
 model Order {
   uuid      String      @unique @default(uuid())
   user      User        @relation(fields: [userUuid], references: [uuid])
   userUuid  String      @map(name: "user_uuid")
-  OrderItem OrderItem[]
+  CartItem CartItem[]
 
   @@map("orders")
 }
