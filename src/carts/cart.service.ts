@@ -201,13 +201,15 @@ export class CartService {
       },
     });
 
+    console.log(cartItemFound);
+
     if (!cartItemFound) {
       throw new NotFoundException(
         'Item does not exist in the cart, Please put the product in the cart',
       );
     }
 
-    if (cartItemFound.product.uuid === productUuid) {
+    if (cartItemFound.orderItem.length) {
       throw new NotFoundException('Item already has been added before');
     }
 
@@ -246,7 +248,7 @@ export class CartService {
       );
     }
 
-    console.log(order.OrderItem);
+    //console.log(order.OrderItem);
 
     return plainToInstance(OrderDto, {
       uuid: order.uuid,
