@@ -16,7 +16,6 @@ import { ProductDto } from 'src/products/dto/response/product.dto';
 import { CartService } from './cart.service';
 import { CartItemDto } from './dto/response/cart-item.dto';
 import { CartDto } from './dto/response/cart.dto';
-import { OrderItemDto } from './dto/response/item-order.dto';
 import { OrderDto } from './dto/response/order.dto';
 
 @Controller('cart')
@@ -63,11 +62,8 @@ export class CartController {
   async makeOrder(
     @Param() product: ProductDto,
     @GetUser() user: User,
-  ): Promise<OrderItemDto> {
-    return await this.cartService.updateOrder(
-      { uuid: user.uuid },
-      product.uuid,
-    );
+  ): Promise<OrderDto> {
+    return await this.cartService.updateOrder(user.uuid, product.uuid);
   }
 
   // show my order

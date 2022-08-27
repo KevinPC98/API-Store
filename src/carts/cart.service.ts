@@ -7,7 +7,6 @@ import { UserDto } from 'src/users/dto/response/user.dto';
 import { UsersService } from 'src/users/users.service';
 import { PickedProductDto } from './dto/request/picked-product.dto';
 import { CartDto } from './dto/response/cart.dto';
-import { OrderItemDto } from './dto/response/item-order.dto';
 import { OrderDto } from './dto/response/order.dto';
 
 @Injectable()
@@ -169,10 +168,7 @@ export class CartService {
     return await this.getCart({ uuid: userInput.uuid });
   }
 
-  async updateOrder(
-    userInput: Prisma.UserWhereUniqueInput,
-    productUuid: string,
-  ): Promise<OrderItemDto> {
+  async updateOrder(userUuid: string, productUuid: string): Promise<OrderDto> {
     const cartItemFound = await this.prismaService.cartItem.findFirst({
       where: {
         product: {
@@ -180,7 +176,7 @@ export class CartService {
         },
         cart: {
           user: {
-            uuid: userInput.uuid,
+            uuid: userUuid,
           },
         },
       },
@@ -211,18 +207,18 @@ export class CartService {
       );
     }
 
-    const orderItem = await this.prismaService.orderItem.create({
+    if (cartItemFound.product.uuid === productUuid) {
+      throw new NotFoundException('Item already has been added before');
+    }
+
+    await this.prismaService.orderItem.create({
       data: {
         cartItemUuid: cartItemFound.uuid,
         orderUuid: cartItemFound.cart.user.order[0].uuid,
       },
     });
 
-    return plainToInstance(OrderItemDto, {
-      uuid: orderItem.uuid,
-      cartItemUuid: cartItemFound.uuid,
-      orderUuid: cartItemFound.cart.user.order[0].uuid,
-    });
+    return await this.getOrder(userUuid);
   }
 
   async getOrder(userUuid: string): Promise<OrderDto> {
