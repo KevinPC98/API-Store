@@ -201,8 +201,6 @@ export class CartService {
       },
     });
 
-    console.log(cartItemFound);
-
     if (!cartItemFound) {
       throw new NotFoundException(
         'Item does not exist in the cart, Please put the product in the cart',
@@ -247,8 +245,6 @@ export class CartService {
         'Order cannot find, there is a problem with it',
       );
     }
-
-    //console.log(order.OrderItem);
 
     return plainToInstance(OrderDto, {
       uuid: order.uuid,
