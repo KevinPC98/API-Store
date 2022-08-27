@@ -16,7 +16,8 @@ import { ProductDto } from 'src/products/dto/response/product.dto';
 import { CartService } from './cart.service';
 import { CartItemDto } from './dto/response/cart-item.dto';
 import { CartDto } from './dto/response/cart.dto';
-import { ItemOrderDto } from './dto/response/item-order.dto';
+import { OrderItemDto } from './dto/response/item-order.dto';
+import { OrderDto } from './dto/response/order.dto';
 
 @Controller('cart')
 export class CartController {
@@ -62,14 +63,20 @@ export class CartController {
   async makeOrder(
     @Param() product: ProductDto,
     @GetUser() user: User,
-  ): Promise<ItemOrderDto> {
+  ): Promise<OrderItemDto> {
     return await this.cartService.updateOrder(
       { uuid: user.uuid },
       product.uuid,
     );
   }
 
+  // show my order
+  @UseGuards(JwtAuthGuard)
+  @Roles(Role.client)
+  @Get('/my-order')
+  async showOrder(@GetUser() user: User): Promise<OrderDto> {
+    return await this.cartService.getOrder(user.uuid);
+  }
   // delete item in order
   // buy a order
-  // show my order
 }

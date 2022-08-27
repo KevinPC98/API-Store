@@ -1,13 +1,11 @@
+import { CartItem } from '@prisma/client';
 import { Exclude, Expose } from 'class-transformer';
 
 @Exclude()
-export class ItemOrderDto {
+export class OrderItemDto {
   @Expose()
   uuid: string;
 
   @Expose()
-  cartItemUuid: string;
-
-  @Expose()
-  orderUuid: string;
+  cartItem: CartItem;
 }

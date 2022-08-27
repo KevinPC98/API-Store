@@ -7,7 +7,8 @@ import { UserDto } from 'src/users/dto/response/user.dto';
 import { UsersService } from 'src/users/users.service';
 import { PickedProductDto } from './dto/request/picked-product.dto';
 import { CartDto } from './dto/response/cart.dto';
-import { ItemOrderDto } from './dto/response/item-order.dto';
+import { OrderItemDto } from './dto/response/item-order.dto';
+import { OrderDto } from './dto/response/order.dto';
 
 @Injectable()
 export class CartService {
@@ -171,7 +172,7 @@ export class CartService {
   async updateOrder(
     userInput: Prisma.UserWhereUniqueInput,
     productUuid: string,
-  ): Promise<ItemOrderDto> {
+  ): Promise<OrderItemDto> {
     const cartItemFound = await this.prismaService.cartItem.findFirst({
       where: {
         product: {
@@ -204,33 +205,57 @@ export class CartService {
       },
     });
 
-    console.log(cartItemFound);
-
     if (!cartItemFound) {
       throw new NotFoundException(
         'Item does not exist in the cart, Please put the product in the cart',
       );
     }
 
-    const [orderItem, cartItemDeleted] = await this.prismaService.$transaction([
-      this.prismaService.orderItem.create({
-        data: {
-          cartItemUuid: cartItemFound.uuid,
-          orderUuid: cartItemFound.cart.user.order[0].uuid,
-        },
-      }),
+    const orderItem = await this.prismaService.orderItem.create({
+      data: {
+        cartItemUuid: cartItemFound.uuid,
+        orderUuid: cartItemFound.cart.user.order[0].uuid,
+      },
+    });
 
-      this.prismaService.cartItem.delete({
-        where: {
-          uuid: cartItemFound.uuid,
-        },
-      }),
-    ]);
-
-    return plainToInstance(ItemOrderDto, {
+    return plainToInstance(OrderItemDto, {
       uuid: orderItem.uuid,
       cartItemUuid: cartItemFound.uuid,
       orderUuid: cartItemFound.cart.user.order[0].uuid,
+    });
+  }
+
+  async getOrder(userUuid: string): Promise<OrderDto> {
+    const order = await this.prismaService.order.findFirst({
+      where: {
+        userUuid,
+        wasBought: false,
+      },
+      select: {
+        uuid: true,
+        wasBought: true,
+        userUuid: true,
+        OrderItem: {
+          select: {
+            uuid: true,
+            CartItem: true,
+          },
+        },
+      },
+    });
+
+    if (!order) {
+      throw new NotFoundException(
+        'Order cannot find, there is a problem with it',
+      );
+    }
+
+    console.log(order.OrderItem);
+
+    return plainToInstance(OrderDto, {
+      uuid: order.uuid,
+      userUuid: order.userUuid,
+      orderItem: order.OrderItem,
     });
   }
 }

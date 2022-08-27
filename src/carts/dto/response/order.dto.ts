@@ -1,5 +1,5 @@
 import { Exclude, Expose } from 'class-transformer';
-import { ItemOrderDto } from './item-order.dto';
+import { OrderItemDto } from './item-order.dto';
 
 @Exclude()
 export class OrderDto {
@@ -7,5 +7,8 @@ export class OrderDto {
   uuid: string;
 
   @Expose()
-  items: ItemOrderDto[];
+  userUuid: string;
+
+  @Expose()
+  orderItem: OrderItemDto[];
 }
