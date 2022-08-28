@@ -9,6 +9,7 @@ async function bootstrap() {
     .setTitle('API Store')
     .setDescription('Product Purchases API')
     .setVersion('1.0')
+    .addBearerAuth()
     .addTag('Store')
     .build();
 
