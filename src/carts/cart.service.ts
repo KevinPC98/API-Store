@@ -210,7 +210,6 @@ export class CartService {
     if (cartItemFound.orderItem.length) {
       throw new NotFoundException('Item already has been added before');
     }
-
     await this.prismaService.orderItem.create({
       data: {
         cartItemUuid: cartItemFound.uuid,
@@ -288,5 +287,93 @@ export class CartService {
     });
 
     return this.getOrder(userUuid);
+  }
+
+  async deleteOrder(userUuid: string): Promise<boolean> {
+    const orderFound = await this.prismaService.order.findFirst({
+      where: {
+        userUuid,
+        wasBought: false,
+      },
+      select: {
+        uuid: true,
+        userUuid: true,
+        wasBought: true,
+        OrderItem: {
+          select: {
+            CartItem: {
+              select: {
+                uuid: true,
+                quantity: true,
+                product: {
+                  select: {
+                    uuid: true,
+                    stock: true,
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+    });
+
+    if (!orderFound) {
+      throw new NotFoundException(
+        'Order cannot find, there is a problem with it',
+      );
+    }
+
+    await this.prismaService.$transaction([
+      this.prismaService.cartItem.deleteMany({
+        where: {
+          orderItem: {
+            some: {
+              orderUuid: orderFound.uuid,
+            },
+          },
+        },
+      }),
+
+      this.prismaService.orderItem.deleteMany({
+        where: {
+          orderUuid: orderFound.uuid,
+        },
+      }),
+
+      this.prismaService.order.delete({
+        where: {
+          uuid: orderFound.uuid,
+        },
+      }),
+
+      this.prismaService.order.create({
+        data: {
+          user: {
+            connect: {
+              uuid: userUuid,
+            },
+          },
+          wasBought: false,
+        },
+      }),
+    ]);
+
+    orderFound.OrderItem.forEach(async (element) => {
+      console.log(element.CartItem?.product.stock);
+      if (!element.CartItem) {
+        throw new NotFoundException('Cannot found cartItem');
+      }
+      await this.prismaService.product.update({
+        where: {
+          uuid: element.CartItem.product.uuid,
+        },
+        data: {
+          stock: element.CartItem.product.stock - element.CartItem.quantity,
+        },
+      });
+    });
+
+    return true;
   }
 }
