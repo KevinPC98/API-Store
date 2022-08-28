@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
   Param,
   Patch,
@@ -63,16 +64,25 @@ export class CartController {
     @Param() product: ProductDto,
     @GetUser() user: User,
   ): Promise<OrderDto> {
-    return await this.cartService.updateOrder(user.uuid, product.uuid);
+    return await this.cartService.addInOrder(user.uuid, product.uuid);
   }
 
-  // show my order
   @UseGuards(JwtAuthGuard)
   @Roles(Role.client)
   @Get('/my-order')
   async showOrder(@GetUser() user: User): Promise<OrderDto> {
     return await this.cartService.getOrder(user.uuid);
   }
+
   // delete item in order
+  @UseGuards(JwtAuthGuard)
+  @Roles(Role.client)
+  @Patch('/my-order/:uuid')
+  async updateOrder(
+    @Param() product: ProductDto,
+    @GetUser() user: User,
+  ): Promise<OrderDto> {
+    return await this.cartService.removeInOrder(user.uuid, product.uuid);
+  }
   // buy a order
 }

@@ -168,7 +168,7 @@ export class CartService {
     return await this.getCart({ uuid: userInput.uuid });
   }
 
-  async updateOrder(userUuid: string, productUuid: string): Promise<OrderDto> {
+  async addInOrder(userUuid: string, productUuid: string): Promise<OrderDto> {
     const cartItemFound = await this.prismaService.cartItem.findFirst({
       where: {
         product: {
@@ -251,5 +251,42 @@ export class CartService {
       userUuid: order.userUuid,
       orderItem: order.OrderItem,
     });
+  }
+
+  async removeInOrder(
+    userUuid: string,
+    productUuid: string,
+  ): Promise<OrderDto> {
+    const orderItemFound = await this.prismaService.orderItem.findFirst({
+      where: {
+        order: {
+          userUuid,
+          wasBought: false,
+        },
+        CartItem: {
+          productUuid,
+        },
+      },
+      select: {
+        uuid: true,
+        order: {
+          select: {
+            uuid: true,
+          },
+        },
+      },
+    });
+
+    if (!orderItemFound) {
+      throw new NotFoundException('Product is not in the order');
+    }
+
+    await this.prismaService.orderItem.delete({
+      where: {
+        uuid: orderItemFound.uuid,
+      },
+    });
+
+    return this.getOrder(userUuid);
   }
 }
