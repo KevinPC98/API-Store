@@ -7,6 +7,13 @@ import {
   Post,
   UseGuards,
 } from '@nestjs/common';
+import {
+  ApiBearerAuth,
+  ApiParam,
+  ApiResponse,
+  ApiTags,
+  ApiUnauthorizedResponse,
+} from '@nestjs/swagger';
 import { User } from '@prisma/client';
 import { GetUser } from 'src/auth/decorators/get-user.decorator';
 import { Roles } from 'src/auth/decorators/role.decorator';
@@ -18,10 +25,17 @@ import { CartItemDto } from './dto/response/cart-item.dto';
 import { CartDto } from './dto/response/cart.dto';
 import { OrderDto } from './dto/response/order.dto';
 
+@ApiTags('cart')
+@ApiBearerAuth()
 @Controller('cart')
 export class CartController {
   constructor(private readonly cartService: CartService) {}
 
+  @ApiResponse({
+    status: 201,
+    description: 'Show details about my cart',
+    type: CartDto,
+  })
   @UseGuards(JwtAuthGuard)
   @Roles(Role.client)
   @Get('/my-cart')
@@ -29,6 +43,16 @@ export class CartController {
     return await this.cartService.getCart({ uuid: user.uuid });
   }
 
+  @ApiResponse({
+    status: 201,
+    description: 'Add item in the cart',
+    type: CartDto,
+  })
+  @ApiParam({
+    name: 'uuid',
+    description: 'Product',
+    required: true,
+  })
   @UseGuards(JwtAuthGuard)
   @Roles(Role.client)
   @Post('/pick-item/:uuid')
@@ -43,6 +67,16 @@ export class CartController {
     );
   }
 
+  @ApiResponse({
+    status: 201,
+    description: 'Remove item in the cart',
+    type: CartDto,
+  })
+  @ApiParam({
+    name: 'uuid',
+    description: 'Product',
+    required: true,
+  })
   @UseGuards(JwtAuthGuard)
   @Roles(Role.client)
   @Patch('/remove-item/:uuid')
@@ -56,9 +90,23 @@ export class CartController {
     );
   }
 
+  @ApiResponse({
+    status: 201,
+    description: 'Add item in order',
+    type: OrderDto,
+  })
+  @ApiParam({
+    name: 'uuid',
+    description: 'Product',
+    required: true,
+  })
   @UseGuards(JwtAuthGuard)
   @Roles(Role.client)
   @Post('/my-cart/:uuid')
+  @ApiUnauthorizedResponse({
+    description:
+      'Item does not exist in the cart, Please put the product in the cart',
+  })
   async makeOrder(
     @Param() product: ProductDto,
     @GetUser() user: User,
@@ -66,6 +114,11 @@ export class CartController {
     return await this.cartService.addInOrder(user.uuid, product.uuid);
   }
 
+  @ApiResponse({
+    status: 201,
+    description: 'Show details about my order',
+    type: OrderDto,
+  })
   @UseGuards(JwtAuthGuard)
   @Roles(Role.client)
   @Get('/my-order')
@@ -73,6 +126,11 @@ export class CartController {
     return await this.cartService.getOrder(user.uuid);
   }
 
+  @ApiResponse({
+    status: 201,
+    description: 'Buy my Order',
+    type: Boolean,
+  })
   @UseGuards(JwtAuthGuard)
   @Roles(Role.client)
   @Patch('/my-order/buy')
@@ -80,6 +138,16 @@ export class CartController {
     return await this.cartService.deleteOrder(user.uuid);
   }
 
+  @ApiResponse({
+    status: 201,
+    description: 'Remove item in my order',
+    type: OrderDto,
+  })
+  @ApiParam({
+    name: 'uuid',
+    description: 'Product',
+    required: true,
+  })
   @UseGuards(JwtAuthGuard)
   @Roles(Role.client)
   @Patch('/my-order/:uuid')
