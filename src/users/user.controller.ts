@@ -9,11 +9,19 @@ import { RolesGuard } from 'src/auth/guards/roles.guard';
 import { Role } from 'src/common/enum';
 import { UsersService } from './users.service';
 import { UpdateUserDto } from './dto/request/update-user.dto';
+import { ApiBearerAuth, ApiResponse, ApiTags } from '@nestjs/swagger';
 
+@ApiTags('user')
 @Controller('user')
 export class UserController {
   constructor(private readonly usersService: UsersService) {}
 
+  @ApiResponse({
+    status: 200,
+    description: 'Return an authenticaded user profile',
+    type: UserDto,
+  })
+  @ApiBearerAuth()
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(Role.client)
   @Get('/profile')
@@ -24,6 +32,12 @@ export class UserController {
     );
   }
 
+  @ApiResponse({
+    status: 200,
+    description: 'Update a user',
+    type: UserDto,
+  })
+  @ApiBearerAuth()
   @Patch('/update')
   @UseGuards(JwtAuthGuard)
   async updateUser(
