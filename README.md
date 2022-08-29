@@ -1,73 +1,67 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="200" alt="Nest Logo" /></a>
+<p align="left">
+  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="100" alt="Nest Logo" /></a>
 </p>
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
-
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://coveralls.io/github/nestjs/nest?branch=master" target="_blank"><img src="https://coveralls.io/repos/github/nestjs/nest/badge.svg?branch=master#9" alt="Coverage" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow"></a>
 </p>
   <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
   [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
 
-## Description
+## API STORE
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+Generic API with the functionality of adding products to a cart and making purchases
+
+## Pre Installation
+
+- Create the categories
+
+```bash
+INSERT INTO "roles" VALUES ('fc8d37bc-8f71-4b50-b870-cd4fedcbe48f', 'ADMIN'), ('ab59b02f-0842-4e5c-a25b-f9dd1236a7de', 'CLIENT');
+```
+
+- Create admin (email: admin@gmail.com, password: 123456)
+
+```bash
+INSERT INTO users (uuid, first_name, last_name, user_name, email, password, created_at, role_uuid)
+VALUES ('d8ae4145-edec-40a6-a592-018491ac9a3f', 'admin', 'admin', 'admin', 'admin@gmail.com', '$2a$10$Z/kM8LKiS8WmhQND2kkNhedj3VyBCmwwdKDZzMzc57tirop4KRWd6' ,NOW(), 'fc8d37bc-8f71-4b50-b870-cd4fedcbe48f');
+```
+
+- Create categories
+
+```bash
+insert into categories values
+('05db5659-cc3e-47b7-8d76-1acb7f96742b', 'food'),
+('e329d954-d24f-487c-a2c4-44b290282ddb', 'home'),
+('d125bd05-cb48-4592-907f-12cf4587d15c', 'tech');
+```
 
 ## Installation
 
+1. Install Yarn
+
 ```bash
-$ npm install
+  $ yarn install
+```
+
+2. According the .env.example file create a new file with the same variables
+
+3. Run the migrations
+
+```bash
+$ yarn start prisma:migrate:run
+```
+
+4.  Generate the models
+
+```bash
+$ yarn start prisma:generate
 ```
 
 ## Running the app
 
 ```bash
 # development
-$ npm run start
+$ yarn start
 
 # watch mode
-$ npm run start:dev
-
-# production mode
-$ npm run start:prod
+$ yarn start:dev
 ```
-
-## Test
-
-```bash
-# unit tests
-$ npm run test
-
-# e2e tests
-$ npm run test:e2e
-
-# test coverage
-$ npm run test:cov
-```
-
-## Support
-
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
-
-## Stay in touch
-
-- Author - [Kamil Myśliwiec](https://kamilmysliwiec.com)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
-
-## License
-
-Nest is [MIT licensed](LICENSE).
