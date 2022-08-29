@@ -25,3 +25,6 @@ ALTER TABLE "orderItems" ADD CONSTRAINT "orderItems_order_uuid_fkey" FOREIGN KEY
 
 -- AddForeignKey
 ALTER TABLE "orderItems" ADD CONSTRAINT "orderItems_cartItemUuid_fkey" FOREIGN KEY ("cartItemUuid") REFERENCES "cartItems"("uuid") ON DELETE SET NULL ON UPDATE CASCADE;
+
+-- InsertRoles
+INSERT INTO "roles"("uuid", "name") VALUES ("fc8d37bc-8f71-4b50-b870-cd4fedcbe48f", "ADMIN"), ("ab59b02f-0842-4e5c-a25b-f9dd1236a7de", "CLIENT");
