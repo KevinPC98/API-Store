@@ -10,30 +10,6 @@
 
 Generic API with the functionality of adding products to a cart and making purchases
 
-## Pre Installation
-
-- Create the categories
-
-```bash
-INSERT INTO "roles" VALUES ('fc8d37bc-8f71-4b50-b870-cd4fedcbe48f', 'ADMIN'), ('ab59b02f-0842-4e5c-a25b-f9dd1236a7de', 'CLIENT');
-```
-
-- Create admin (email: admin@gmail.com, password: 123456)
-
-```bash
-INSERT INTO users (uuid, first_name, last_name, user_name, email, password, created_at, role_uuid)
-VALUES ('d8ae4145-edec-40a6-a592-018491ac9a3f', 'admin', 'admin', 'admin', 'admin@gmail.com', '$2a$10$Z/kM8LKiS8WmhQND2kkNhedj3VyBCmwwdKDZzMzc57tirop4KRWd6' ,NOW(), 'fc8d37bc-8f71-4b50-b870-cd4fedcbe48f');
-```
-
-- Create categories
-
-```bash
-insert into categories values
-('05db5659-cc3e-47b7-8d76-1acb7f96742b', 'food'),
-('e329d954-d24f-487c-a2c4-44b290282ddb', 'home'),
-('d125bd05-cb48-4592-907f-12cf4587d15c', 'tech');
-```
-
 ## Installation
 
 1. Install Yarn
@@ -44,24 +20,22 @@ insert into categories values
 
 2. According the .env.example file create a new file with the same variables
 
-3. Run the migrations
+## Running the app in docker
+
+1. Create network containers
 
 ```bash
-$ yarn start prisma:migrate:run
+$ docker-compose up
 ```
 
-4.  Generate the models
+2. In the CLI of the container run:
 
 ```bash
-$ yarn start prisma:generate
+$ npx prisma migrate deploy --preview-feature
 ```
 
-## Running the app
+3.  Generate the models
 
 ```bash
-# development
-$ yarn start
-
-# watch mode
-$ yarn start:dev
+$ npx prisma generate
 ```

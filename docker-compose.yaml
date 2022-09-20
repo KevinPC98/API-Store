@@ -23,8 +23,11 @@ services:
       POSTGRES_USER: ${POSTGRES_USER}
       POSTGRES_DB: '${POSTGRES_DB}'
       DATABASE_HOST: '${POSTGRES_HOST}'
+      PG_DATA: /var/lib/postgresql/data
     env_file:
       - .env
+    volumes:
+      - pg-data:/var/lib/postgresql/data
 
   pgadmin:
     image: dpage/pgadmin4
@@ -35,3 +38,6 @@ services:
     environment:
       PGADMIN_DEFAULT_EMAIL: '${PGADMIN_DEFAULT_EMAIL}'
       PGADMIN_DEFAULT_PASSWORD: '${PGADMIN_DEFAULT_PASSWORD}'
+
+volumes:
+  pg-data:
