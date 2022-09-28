@@ -1,7 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { CartItem } from '@prisma/client';
 import { Exclude, Expose } from 'class-transformer';
-import { UserDto } from 'src/users/dto/response/user.dto';
+import { UserDto } from '../../../users/dto/response/user.dto';
 
 @Exclude()
 export class CartDto {

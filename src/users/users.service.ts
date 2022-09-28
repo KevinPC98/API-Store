@@ -2,9 +2,9 @@ import { Injectable } from '@nestjs/common';
 import { Prisma, User } from '@prisma/client';
 import { hashSync } from 'bcryptjs';
 import { plainToInstance } from 'class-transformer';
-import { CreateUserDto } from 'src/users/dto/request/create-user.dto';
-import { UserDto } from 'src/users/dto/response/user.dto';
-import { PrismaService } from 'src/prisma/prisma.service';
+import { CreateUserDto } from '../users/dto/request/create-user.dto';
+import { UserDto } from '../users/dto/response/user.dto';
+import { PrismaService } from '../prisma/prisma.service';
 
 @Injectable()
 export class UsersService {

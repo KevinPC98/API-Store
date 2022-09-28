@@ -1,9 +1,9 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
 import { plainToInstance } from 'class-transformer';
-import { PaginationArgs } from 'src/common/dto/request/pagination-options.dto';
-import { PaginationDto } from 'src/common/dto/response/pagination.dto';
-import { PrismaService } from 'src/prisma/prisma.service';
+import { PaginationArgs } from '../common/dto/request/pagination-options.dto';
+import { PaginationDto } from '../common/dto/response/pagination.dto';
+import { PrismaService } from '../prisma/prisma.service';
 import { CreateProductDto } from './dto/request/create-product.dto';
 import { ProductDto } from './dto/response/product.dto';
 import { ProductWithPaginationDto } from './dto/response/products-with-pagination.dto';

@@ -11,9 +11,9 @@ import { LoginDto } from './dto/request/login.dto';
 import { JwtService } from '@nestjs/jwt';
 import { TokenDto } from './dto/response/token.dto';
 import { UserWithTokenDto } from './dto/response/user-with-token.dto';
-import { UsersService } from 'src/users/users.service';
-import { Role } from 'src/common/enum';
-import { CartService } from 'src/carts/cart.service';
+import { UsersService } from '../users/users.service';
+import { Role } from '../common/enum';
+import { CartService } from '../carts/cart.service';
 
 @Injectable()
 export class AuthService {

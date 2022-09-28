@@ -4,7 +4,7 @@ import { UsersService } from './users.service';
 describe('UsersService', () => {
   let service: UsersService;
 
-  beforeEach(async () => {
+  beforeAll(async () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [UsersService],
     }).compile();

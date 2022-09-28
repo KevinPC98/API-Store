@@ -1,10 +1,10 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { Cart, Prisma } from '@prisma/client';
 import { plainToInstance } from 'class-transformer';
-import { PrismaService } from 'src/prisma/prisma.service';
-import { ProductService } from 'src/products/product.service';
-import { UserDto } from 'src/users/dto/response/user.dto';
-import { UsersService } from 'src/users/users.service';
+import { PrismaService } from '../prisma/prisma.service';
+import { ProductService } from '../products/product.service';
+import { UserDto } from '../users/dto/response/user.dto';
+import { UsersService } from '../users/users.service';
 import { PickedProductDto } from './dto/request/picked-product.dto';
 import { CartDto } from './dto/response/cart.dto';
 import { OrderDto } from './dto/response/order.dto';

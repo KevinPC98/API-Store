@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Exclude, Expose } from 'class-transformer';
-import { ProductDto } from 'src/products/dto/response/product.dto';
+import { ProductDto } from '../../../products/dto/response/product.dto';
 
 @Exclude()
 export class CartItemDto {

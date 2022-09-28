@@ -6,9 +6,9 @@ import { JwtModule, JwtService } from '@nestjs/jwt';
 import { PassportModule } from '@nestjs/passport';
 import { LocalStrategy } from './strategies/local.strategy';
 import { JwtStrategy } from './strategies/jwt.strategy';
-import { UsersService } from 'src/users/users.service';
-import { CartService } from 'src/carts/cart.service';
-import { ProductService } from 'src/products/product.service';
+import { UsersService } from '../users/users.service';
+import { CartService } from '../carts/cart.service';
+import { ProductService } from '../products/product.service';
 
 @Module({
   imports: [

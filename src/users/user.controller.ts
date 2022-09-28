@@ -1,12 +1,12 @@
 import { Body, Controller, Get, Patch, UseGuards } from '@nestjs/common';
 import { User } from '@prisma/client';
 import { plainToInstance } from 'class-transformer';
-import { GetUser } from 'src/auth/decorators/get-user.decorator';
-import { Roles } from 'src/auth/decorators/role.decorator';
-import { UserDto } from 'src/users/dto/response/user.dto';
-import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
-import { RolesGuard } from 'src/auth/guards/roles.guard';
-import { Role } from 'src/common/enum';
+import { GetUser } from '../auth/decorators/get-user.decorator';
+import { Roles } from '../auth/decorators/role.decorator';
+import { UserDto } from '../users/dto/response/user.dto';
+import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
+import { RolesGuard } from '../auth/guards/roles.guard';
+import { Role } from '../common/enum';
 import { UsersService } from './users.service';
 import { UpdateUserDto } from './dto/request/update-user.dto';
 import { ApiBearerAuth, ApiResponse, ApiTags } from '@nestjs/swagger';
