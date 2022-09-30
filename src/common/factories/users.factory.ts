@@ -2,15 +2,11 @@ import { Prisma, User } from '@prisma/client';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { AbstractFactory } from './abstract.factory';
 import { datatype, internet, name } from 'faker';
-import { RoleFactory } from './role.factory';
 
 type UserInput = Partial<Prisma.UserCreateInput>;
 
 export class UserFactory extends AbstractFactory<User> {
-  constructor(
-    protected readonly prismaClient: PrismaService,
-    protected readonly roleFactory: RoleFactory,
-  ) {
+  constructor(protected readonly prismaClient: PrismaService) {
     super();
   }
 
