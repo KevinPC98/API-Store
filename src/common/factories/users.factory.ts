@@ -2,6 +2,7 @@ import { Prisma, User } from '@prisma/client';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { AbstractFactory } from './abstract.factory';
 import { datatype, internet, name } from 'faker';
+import { hashSync } from 'bcryptjs';
 
 type UserInput = Partial<Prisma.UserCreateInput>;
 
@@ -18,7 +19,7 @@ export class UserFactory extends AbstractFactory<User> {
         firstName: name.firstName(),
         lastName: name.lastName(),
         email: internet.email(),
-        password: internet.password(),
+        password: hashSync(input.password ?? '', 10),
         role: input.role ?? {},
       },
     });
